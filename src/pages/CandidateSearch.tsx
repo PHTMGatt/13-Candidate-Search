@@ -30,6 +30,14 @@ const CandidateSearch = () => {
     await searchForSpecificCandidate(data[index].userName || '')
 
   }
+
+
+  useEffect(() => {
+    searchForUsers()
+    searchForSpecificCandidate(resultingCandidate.userName || '')
+
+  })
+
 };
 
 export default CandidateSearch;
