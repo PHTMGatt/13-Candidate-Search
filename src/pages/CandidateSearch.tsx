@@ -17,8 +17,19 @@ const CandidateSearch = () => {
     company: null,
   })
 
+  const [index, setIndex] = useState<number>(0)
 
-}
- 
+  const searchForSpecificCandidate = async (user: string) => {
+    const data: Candidate = await searchGithubUser(user)
+    setResultingCandidate(data)
+  }
+
+  const searchForUsers = async () => {
+    const data: Candidate[] = await searchGithub()
+    setResults(data)
+    await searchForSpecificCandidate(data[index].userName || '')
+
+  }
+};
 
 export default CandidateSearch;
