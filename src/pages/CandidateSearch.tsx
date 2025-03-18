@@ -31,6 +31,18 @@ const CandidateSearch = () => {
 
   }
 
+  const selectCandidate = async (isSelected: boolean) => {
+    if (isSelected) {
+      let candidatesArray: Candidate[] = []
+      const storedCandidates = localStorage.getItem('storedCandidates')
+      if (typeof storedCandidates === 'string') {
+        candidatesArray = JSON.parse(storedCandidates)
+      }
+      candidatesArray.push(resultingCandidate)
+      localStorage.setItem('storedCandidates', JSON.stringify(candidatesArray))
+    }
+
+  }
 
   useEffect(() => {
     searchForUsers()
