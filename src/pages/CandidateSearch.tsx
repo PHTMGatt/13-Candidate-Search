@@ -38,6 +38,14 @@ const CandidateSearch = () => {
 
   })
 
+
+  return (
+  <>
+  CandidateSearch
+  <CandidateCard resultingCandidate={resultingCandidate} selectCandidate={selectCandidate}/>
+  
+  </>
+  )
 };
 
 export default CandidateSearch;
