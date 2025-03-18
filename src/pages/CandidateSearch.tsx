@@ -42,6 +42,14 @@ const CandidateSearch = () => {
       localStorage.setItem('storedCandidates', JSON.stringify(candidatesArray))
     }
 
+    if (index + 1 < results.length){
+      setIndex(index + 1)
+      await searchForSpecificCandidate(results[index + 1].userName || '')
+    }else {
+      setIndex(0)
+      await searchForUsers()
+    }
+
   }
 
   useEffect(() => {
