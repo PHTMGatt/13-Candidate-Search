@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import type {Candidate} from '../interfaces/Candidate.interface'
 import SavedCandidate from '../components/savedCandidates';
-import { BiColor } from 'react-icons/bi';
+
 
 const SavedCandidates = () => {
   const [potentialCandidates, setPotentialCandidates] = useState<Candidate[]>(
