@@ -11,12 +11,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+const port = Number(process.env.PORT) || 3000; // Ensures a valid number
 
 export default defineConfig({
   envDir: './environment',
   plugins: [react()],
   server: {
-    host: '0.0.0.0', // Bind to 0.0.0.0 so Render can access the server           // Use Render's PORT or fallback to 3000 locally
+    host: '0.0.0.0',
+    port,
+    allowedHosts: ['.onrender.com'], // Allow Render deployment
   },
 });
-
