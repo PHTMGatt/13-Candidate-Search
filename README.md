@@ -2,7 +2,7 @@
 
 A clean and responsive GitHub candidate viewer built with **React** and **TypeScript**. This app helps you explore potential developers from GitHub, presenting them in a modern UI with theme toggling, pagination, and plans for filtering and sorting features.
 
-🔗 **Live Demo**: [https://one3-candidate-search-u82d.onrender.com](https://one3-candidate-search-u82d.onrender.com)
+🔗 **Live Demo**: [https://one3-candidate-search-u82d.onrender.com)
 
 ---
 
