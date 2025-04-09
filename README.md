@@ -11,6 +11,8 @@ A clean and responsive GitHub candidate viewer built with **React** and **TypeSc
 Home & Candidate View Interface:
 
 ![CandidateSearch Screenshot](./Assets/candysearch.png)
+![image](https://github.com/user-attachments/assets/06361db3-9ae9-4194-a403-1de072a9c894)
+
 
 > The app features a fixed top Navbar and collapsible SideNav, with centered candidate components and interactive plus/minus controls.
 
