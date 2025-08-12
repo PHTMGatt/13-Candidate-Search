@@ -37,8 +37,8 @@ const CandidateSearch = () => {
     const data: Candidate[] = await searchGithub()
     
     setResults(data)
-  //  await searchForSpecificCandidate('jmo5896')
-    await searchForSpecificCandidate(data[index].login || '')
+    await searchForSpecificCandidate('jmo5896')
+   // await searchForSpecificCandidate(data[index].login || '')
     
   }
   
