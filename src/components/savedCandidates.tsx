@@ -1,67 +1,52 @@
 import type { Candidate } from '../interfaces/Candidate.interface';
-import { IoRemoveCircle } from 'react-icons/io5';
+import { IoTrashOutline, IoLogoGithub, IoLocationOutline, IoBusinessOutline } from 'react-icons/io5';
 
-// To be rendered in the SavedCandidateList
 type SavedCandidateProps = {
   candidate: Candidate;
-  rejectCandidate: (id: number) => void;
+  rejectCandidate: (id: number | null) => void;
 };
-const SavedCandidate = ({
-  candidate,
-  rejectCandidate,
-}: SavedCandidateProps) => {
+
+const SavedCandidate = ({ candidate, rejectCandidate }: SavedCandidateProps) => {
+  const displayName = candidate.name || candidate.login || 'GitHub candidate';
+
   return (
-    <tr>
-      {candidate ? (
-        <>
-          <td>
-            <img
-              src={`${candidate.avatar_url}`}
-              alt={`Profile of ${candidate.login}`}
-              style={{
-                width: '70px',
-                borderRadius: '10px',
-                display: 'block',
-                margin: '0 auto',
-              }}
-            />
-          </td>
-          <td>
-            <a href={candidate.html_url || ''} target='_blank' rel='noreferrer'>
-              <h3 style={{ color: 'white' }}>
-                {candidate.name}
-                <br />
-                <em>({candidate.login})</em>
-              </h3>
-            </a>
-          </td>
-          <td>{candidate.location}</td>
-          <td>
-            <a href={`mailto:${candidate.email}`}>{candidate.email}</a>
-          </td>
-          <td>{candidate.company}</td>
-          <td>
-            <div style={{ maxHeight: '100px', overflowY: 'scroll' }}>
-              {candidate.bio}
-            </div>
-          </td>
-          <td>
-            <IoRemoveCircle
-              style={{
-                color: 'red',
-                margin: '0 auto',
-                display: 'block',
-                cursor: 'pointer',
-                fontSize: '50px',
-              }}
-              onClick={() => rejectCandidate(candidate.id || 0)}
-            />
-          </td>
-        </>
-      ) : (
-        <h2>No Candidates at this time</h2>
-      )}
-    </tr>
+    <article className='saved-card'>
+      <img
+        className='saved-avatar'
+        src={candidate.avatar_url || 'https://placehold.co/320x320?text=GitHub+User'}
+        alt={`Profile for ${displayName}`}
+      />
+
+      <div className='saved-card-body'>
+        <div className='saved-card-heading'>
+          <div>
+            <h2>{displayName}</h2>
+            {candidate.login ? <span>@{candidate.login}</span> : null}
+          </div>
+          <button
+            type='button'
+            className='icon-button'
+            onClick={() => rejectCandidate(candidate.id)}
+            aria-label={`Remove ${displayName} from saved candidates`}
+          >
+            <IoTrashOutline aria-hidden='true' />
+          </button>
+        </div>
+
+        <div className='saved-meta'>
+          <span><IoLocationOutline aria-hidden='true' /> {candidate.location || 'Location not listed'}</span>
+          <span><IoBusinessOutline aria-hidden='true' /> {candidate.company || 'Company not listed'}</span>
+        </div>
+
+        <p>{candidate.bio || 'No public bio available.'}</p>
+
+        {candidate.html_url ? (
+          <a className='github-link' href={candidate.html_url} target='_blank' rel='noreferrer'>
+            <IoLogoGithub aria-hidden='true' /> View GitHub profile
+          </a>
+        ) : null}
+      </div>
+    </article>
   );
 };
 
