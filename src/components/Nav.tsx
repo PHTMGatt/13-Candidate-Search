@@ -1,34 +1,32 @@
-import {Link, useLocation} from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom';
+import { IoPeopleOutline, IoSearchOutline } from 'react-icons/io5';
 
 const Nav = () => {
-  // TODO: Add necessary code to display the navigation bar and link between the pages
-
-const currentPage = useLocation().pathname
+  const currentPage = useLocation().pathname;
 
   return (
-    
-<ul className='nav nav-tabs'>
-      <li className='nav-item'>
-        <Link
-          to='/'
-          className={currentPage === '/' ? 'nav-link active' : 'nav-link'}
-        >
-          Home
+    <header className='site-header'>
+      <Link to='/' className='brand' aria-label='Candidate Scout home'>
+        <span className='brand-mark'>CS</span>
+        <span>
+          <strong>Candidate Scout</strong>
+          <small>GitHub talent discovery</small>
+        </span>
+      </Link>
+
+      <nav className='nav-links' aria-label='Primary navigation'>
+        <Link to='/' className={currentPage === '/' ? 'nav-link active' : 'nav-link'}>
+          <IoSearchOutline aria-hidden='true' /> Search
         </Link>
-      </li>
-      <li className='nav-item'>
         <Link
           to='/SavedCandidates'
-          className={
-            currentPage === '/SavedCandidates' ? 'nav-link active' : 'nav-link'
-          }
+          className={currentPage === '/SavedCandidates' ? 'nav-link active' : 'nav-link'}
         >
-          Potential Candidates
+          <IoPeopleOutline aria-hidden='true' /> Shortlist
         </Link>
-      </li>
-    </ul>
-
-  )
+      </nav>
+    </header>
+  );
 };
 
 export default Nav;
