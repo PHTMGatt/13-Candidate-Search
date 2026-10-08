@@ -1,76 +1,121 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { searchGithub, searchGithubUser } from '../api/API';
-import { Candidate } from '../interfaces/Candidate.interface';
+import type { Candidate } from '../interfaces/Candidate.interface';
 import CandidateCard from '../components/CandidateCard';
 
 const CandidateSearch = () => {
-  const [results, setResults] = useState<Candidate[]>([])
+  const [results, setResults] = useState<Candidate[]>([]);
+  const [candidate, setCandidate] = useState<Candidate | null>(null);
+  const [index, setIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const [resultingCandidate, setResultingCandidate] = useState<Candidate>({
-    id: null,
-    name: null,
-    login: null,
-    location: null,
-    avatar_url: null,
-    email: null,
-    html_url: null,
-    company: null,
-    bio: null,
-  })
+  const loadCandidate = async (list: Candidate[], candidateIndex: number) => {
+    const login = list[candidateIndex]?.login;
+    if (!login) {
+      throw new Error('No candidate username was returned by GitHub.');
+    }
 
-  const [index, setIndex] = useState<number>(0)
+    const details = await searchGithubUser(login);
+    setCandidate(details);
+  };
+
+  const loadCandidates = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const data = await searchGithub();
+      if (data.length === 0) {
+        throw new Error('No candidates were returned.');
+      }
+
+      setResults(data);
+      setIndex(0);
+      await loadCandidate(data, 0);
+    } catch (err) {
+      setCandidate(null);
+      setError(err instanceof Error ? err.message : 'Unable to load candidates.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    searchForUsers()
-    // searchForSpecificCandidate(resultingCandidate.login || '')
+    void loadCandidates();
+  }, []);
 
-  },[])
+  const saveCandidate = (selectedCandidate: Candidate) => {
+    const stored = localStorage.getItem('storedCandidates');
+    let savedCandidates: Candidate[] = [];
 
-  const searchForSpecificCandidate = async (user: string) => {
-    const data: Candidate = await searchGithubUser(user)
-    const { id, name, login, location, avatar_url, email, html_url, company, bio } = data
-    setResultingCandidate({ id, name, login, location, avatar_url, email, html_url, company, bio })
-    console.log(resultingCandidate)
-  }
-  
-  const searchForUsers = async () => {
-    const data: Candidate[] = await searchGithub()
-    
-    setResults(data)
-    await searchForSpecificCandidate('jmo5896')
-   // await searchForSpecificCandidate(data[index].login || '')
-    
-  }
-  
-  const selectCandidate = async (isSelected: boolean) => {
-    if (isSelected) {
-      let candidatesArray: Candidate[] = []
-      const storedCandidates = localStorage.getItem('storedCandidates')
-      if (typeof storedCandidates === 'string') {
-        candidatesArray = JSON.parse(storedCandidates)
+    if (stored) {
+      try {
+        savedCandidates = JSON.parse(stored) as Candidate[];
+      } catch {
+        savedCandidates = [];
       }
-      candidatesArray.push(resultingCandidate)
-      localStorage.setItem('storedCandidates', JSON.stringify(candidatesArray))
     }
 
-    if (index + 1 < results.length){
-      setIndex(index + 1)
-      await searchForSpecificCandidate(results[index + 1].login || '')
-    }else {
-      setIndex(0)
-      await searchForUsers()
+    const alreadySaved = savedCandidates.some((item) => item.id === selectedCandidate.id);
+    if (!alreadySaved) {
+      savedCandidates.push(selectedCandidate);
+      localStorage.setItem('storedCandidates', JSON.stringify(savedCandidates));
+    }
+  };
+
+  const selectCandidate = async (isSelected: boolean) => {
+    if (!candidate || loading) return;
+
+    if (isSelected) {
+      saveCandidate(candidate);
     }
 
-  }
+    const nextIndex = index + 1;
+    setLoading(true);
+    setError('');
 
+    try {
+      if (nextIndex < results.length) {
+        setIndex(nextIndex);
+        await loadCandidate(results, nextIndex);
+      } else {
+        await loadCandidates();
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to load the next candidate.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-  <>
-  CandidateSearch
-  <CandidateCard resultingCandidate={resultingCandidate} selectCandidate={selectCandidate}/>
-  
-  </>
-  )
+    <section className='candidate-page'>
+      <div className='page-intro'>
+        <span className='eyebrow'>GitHub talent discovery</span>
+        <h1>Find your next candidate.</h1>
+        <p>
+          Review public GitHub profiles one at a time. Save the people worth a second look and keep moving.
+        </p>
+      </div>
+
+      {error ? (
+        <div className='status-panel' role='alert'>
+          <strong>Couldn&apos;t load candidates.</strong>
+          <span>{error}</span>
+          <button type='button' className='primary-button' onClick={() => void loadCandidates()}>
+            Try again
+          </button>
+        </div>
+      ) : (
+        <CandidateCard
+          resultingCandidate={candidate}
+          selectCandidate={selectCandidate}
+          loading={loading}
+        />
+      )}
+    </section>
+  );
 };
 
 export default CandidateSearch;
