@@ -3,10 +3,13 @@ import { searchGithub, searchGithubUser } from '../api/API';
 import type { Candidate } from '../interfaces/Candidate.interface';
 import CandidateCard from '../components/CandidateCard';
 
+const REFERENCE_CANDIDATE = 'jmo5896';
+
 const CandidateSearch = () => {
   const [results, setResults] = useState<Candidate[]>([]);
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [index, setIndex] = useState(0);
+  const [showingReference, setShowingReference] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -20,19 +23,29 @@ const CandidateSearch = () => {
     setCandidate(details);
   };
 
-  const loadCandidates = async () => {
+  const loadRandomBatch = async () => {
+    const data = await searchGithub();
+    if (data.length === 0) {
+      throw new Error('No candidates were returned.');
+    }
+
+    setResults(data);
+    setIndex(0);
+    return data;
+  };
+
+  const initializeCandidates = async () => {
     setLoading(true);
     setError('');
 
     try {
-      const data = await searchGithub();
-      if (data.length === 0) {
-        throw new Error('No candidates were returned.');
-      }
+      await loadRandomBatch();
 
-      setResults(data);
-      setIndex(0);
-      await loadCandidate(data, 0);
+      // Show a known, fully populated profile first so every supported field
+      // is visibly demonstrated before cycling through random GitHub users.
+      const referenceProfile = await searchGithubUser(REFERENCE_CANDIDATE);
+      setCandidate(referenceProfile);
+      setShowingReference(true);
     } catch (err) {
       setCandidate(null);
       setError(err instanceof Error ? err.message : 'Unable to load candidates.');
@@ -42,7 +55,7 @@ const CandidateSearch = () => {
   };
 
   useEffect(() => {
-    void loadCandidates();
+    void initializeCandidates();
   }, []);
 
   const saveCandidate = (selectedCandidate: Candidate) => {
@@ -71,16 +84,24 @@ const CandidateSearch = () => {
       saveCandidate(candidate);
     }
 
-    const nextIndex = index + 1;
     setLoading(true);
     setError('');
 
     try {
+      if (showingReference) {
+        setShowingReference(false);
+        setIndex(0);
+        await loadCandidate(results, 0);
+        return;
+      }
+
+      const nextIndex = index + 1;
       if (nextIndex < results.length) {
         setIndex(nextIndex);
         await loadCandidate(results, nextIndex);
       } else {
-        await loadCandidates();
+        const freshResults = await loadRandomBatch();
+        await loadCandidate(freshResults, 0);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to load the next candidate.');
@@ -95,7 +116,7 @@ const CandidateSearch = () => {
         <span className='eyebrow'>GitHub talent discovery</span>
         <h1>Find your next candidate.</h1>
         <p>
-          Review public GitHub profiles one at a time. Save the people worth a second look and keep moving.
+          Review public GitHub profiles one at a time. The first profile is a reference example that demonstrates every supported profile field; random candidates may leave some fields blank.
         </p>
       </div>
 
@@ -103,7 +124,7 @@ const CandidateSearch = () => {
         <div className='status-panel' role='alert'>
           <strong>Couldn&apos;t load candidates.</strong>
           <span>{error}</span>
-          <button type='button' className='primary-button' onClick={() => void loadCandidates()}>
+          <button type='button' className='primary-button' onClick={() => void initializeCandidates()}>
             Try again
           </button>
         </div>
