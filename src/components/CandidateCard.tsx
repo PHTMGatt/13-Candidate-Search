@@ -1,93 +1,83 @@
-import type { Candidate } from '../interfaces/Candidate.interface'
-import {IoAddCircle, IoRemoveCircle} from 'react-icons/io5'
+import type { Candidate } from '../interfaces/Candidate.interface';
+import { IoCheckmark, IoClose, IoLogoGithub, IoLocationOutline, IoBusinessOutline, IoMailOutline } from 'react-icons/io5';
 
 type CandidateCardProps = {
-    resultingCandidate: Candidate;
-    selectCandidate: (isSelected: boolean) => void; 
-}
+  resultingCandidate: Candidate | null;
+  selectCandidate: (isSelected: boolean) => void | Promise<void>;
+  loading?: boolean;
+};
 
-const CandidateCard = ({resultingCandidate, selectCandidate}:CandidateCardProps) => {
+const CandidateCard = ({ resultingCandidate, selectCandidate, loading = false }: CandidateCardProps) => {
+  if (loading && !resultingCandidate) {
+    return (
+      <div className='candidate-card candidate-card--loading' aria-live='polite'>
+        <div className='profile-skeleton' />
+        <div className='profile-skeleton profile-skeleton--text' />
+        <div className='profile-skeleton profile-skeleton--text short' />
+      </div>
+    );
+  }
+
+  if (!resultingCandidate?.login) {
+    return <div className='status-panel'>No candidates are available right now.</div>;
+  }
+
+  const displayName = resultingCandidate.name || resultingCandidate.login;
+
   return (
-    <div>
-      {resultingCandidate?.login ? (
-        <>
-          {resultingCandidate?.avatar_url ? (
-            <img
-              src={`${resultingCandidate.avatar_url}`}
-              alt={`Profile of ${resultingCandidate.login}`}
-              style={{ width: '300px', borderRadius: '30px 30px 0 0' }}
-            />
-          ) : (
-            <img
-              src={'https://placehold.co/600x400'}
-              alt={'Placeholder'}
-              style={{ width: '300px', borderRadius: '30px 30px 0 0' }}
-            />
-          )}
+    <article className='candidate-card'>
+      <div className='candidate-media'>
+        <img
+          src={resultingCandidate.avatar_url || 'https://placehold.co/640x640?text=GitHub+User'}
+          alt={`GitHub profile for ${displayName}`}
+        />
+        <span className='candidate-source'><IoLogoGithub aria-hidden='true' /> GitHub profile</span>
+      </div>
 
-          <section
-            style={{
-              backgroundColor: '#000',
-              width: '280px',
-              borderRadius: '0 0 30px 30px',
-              padding: '0 10px 10px',
-            }}
+      <div className='candidate-body'>
+        <div className='candidate-heading'>
+          <div>
+            <span className='eyebrow'>Candidate profile</span>
+            <h2>{displayName}</h2>
+            <a href={resultingCandidate.html_url || '#'} target='_blank' rel='noreferrer'>
+              @{resultingCandidate.login}
+            </a>
+          </div>
+        </div>
+
+        <div className='candidate-details'>
+          <p><IoLocationOutline aria-hidden='true' /><span>{resultingCandidate.location || 'Location not listed'}</span></p>
+          <p><IoBusinessOutline aria-hidden='true' /><span>{resultingCandidate.company || 'Company not listed'}</span></p>
+          <p><IoMailOutline aria-hidden='true' /><span>{resultingCandidate.email || 'Email not public'}</span></p>
+        </div>
+
+        <p className='candidate-bio'>
+          {resultingCandidate.bio || 'This candidate has not added a public bio yet.'}
+        </p>
+
+        <div className='candidate-actions'>
+          <button
+            type='button'
+            className='decision-button decision-button--skip'
+            onClick={() => void selectCandidate(false)}
+            disabled={loading}
           >
-            {resultingCandidate?.html_url && resultingCandidate?.login ? (
-              <a href={resultingCandidate.html_url} target='_blank' rel='noreferrer'>
-                <h2
-                  style={{ padding: 0, margin: '-7px 0 0 0', color: 'white' }}
-                >
-                  {resultingCandidate.name}
-                  <em>({resultingCandidate.login})</em>
-                </h2>
-              </a>
-            ) : null}
-            {resultingCandidate?.location ? (
-              <p>Location: {resultingCandidate.location}</p>
-            ) : null}
-            {resultingCandidate?.email ? (
-              <p>
-                Email:{' '}
-                <a href={`mailto:${resultingCandidate.email}`}>{resultingCandidate.email}</a>
-              </p>
-            ) : null}
-            {resultingCandidate?.company ? (
-              <p>Company: {resultingCandidate.company}</p>
-            ) : null}
-            {resultingCandidate?.bio ? <p>Bio: {resultingCandidate.bio}</p> : null}
-          </section>
-          <section
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              marginTop: '10px',
-            }}
+            <IoClose aria-hidden='true' />
+            Skip
+          </button>
+          <button
+            type='button'
+            className='decision-button decision-button--save'
+            onClick={() => void selectCandidate(true)}
+            disabled={loading}
           >
-            <IoRemoveCircle
-              style={{
-                color: 'red',
-                fontSize: '80px',
-                cursor: 'pointer',
-              }}
-              onClick={() => selectCandidate(false)}
-            />
+            <IoCheckmark aria-hidden='true' />
+            Save candidate
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+};
 
-            <IoAddCircle
-              onClick={() => selectCandidate(true)}
-              style={{
-                fontSize: '80px',
-                color: 'green',
-                cursor: 'pointer',
-              }}
-            />
-          </section>
-        </>
-      ) : (
-        <h2>No Candidates at this time</h2>
-      )}
-    </div>
-  )
-}
-
-export default CandidateCard
+export default CandidateCard;
