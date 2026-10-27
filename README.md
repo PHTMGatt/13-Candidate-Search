@@ -10,7 +10,7 @@ A clean and responsive GitHub candidate viewer built with **React** and **TypeSc
 
 Home & Candidate View Interface:
 
-![CandidateSearch Screenshot](./docs/portfolio/cover.webp)
+![CandidateSearch Screenshot](https://raw.githubusercontent.com/PHTMGatt/12-React-Portfolio/main/src/assets/photos/Candidate%20Search.png)
 
 > The app features a fixed top Navbar and collapsible SideNav, with centered candidate components and interactive plus/minus controls.
 
