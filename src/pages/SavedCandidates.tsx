@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { IoClose, IoFolderOutline, IoLocationOutline, IoLogoGithub, IoPeopleOutline } from 'react-icons/io5';
 import type { Candidate } from '../interfaces/Candidate.interface';
 
@@ -18,29 +18,26 @@ const formatCount = (value?: number) => {
 
 const candidateKey = (candidate: Candidate) => String(candidate.id ?? candidate.login ?? 'unknown');
 
-const SavedCandidates = ({
+const readStoredCandidates = (storageKey: CandidateCollectionProps['storageKey']): Candidate[] => {
+  const stored = localStorage.getItem(storageKey);
+  if (!stored) return [];
+
+  try {
+    return JSON.parse(stored) as Candidate[];
+  } catch {
+    localStorage.removeItem(storageKey);
+    return [];
+  }
+};
+
+const CandidateCollection = ({
   storageKey,
   eyebrow,
   title,
   description,
   emptyTitle,
 }: CandidateCollectionProps) => {
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
-
-  useEffect(() => {
-    const stored = localStorage.getItem(storageKey);
-    if (!stored) {
-      setCandidates([]);
-      return;
-    }
-
-    try {
-      setCandidates(JSON.parse(stored) as Candidate[]);
-    } catch {
-      localStorage.removeItem(storageKey);
-      setCandidates([]);
-    }
-  }, [storageKey]);
+  const [candidates, setCandidates] = useState<Candidate[]>(() => readStoredCandidates(storageKey));
 
   const removeCandidate = (candidate: Candidate) => {
     const key = candidateKey(candidate);
@@ -119,5 +116,10 @@ const SavedCandidates = ({
     </section>
   );
 };
+
+// key resets the list when the route switches between shortlist and saved
+const SavedCandidates = (props: CandidateCollectionProps) => (
+  <CandidateCollection key={props.storageKey} {...props} />
+);
 
 export default SavedCandidates;
