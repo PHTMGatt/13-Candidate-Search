@@ -1,18 +1,14 @@
-# CandidateSearch
+# Candidate Scout
+
+GitHub talent discovery: search profiles by skills, location, experience and real project activity.
+
+[![Verify](https://github.com/PHTMGatt/13-Candidate-Search/actions/workflows/verify.yml/badge.svg)](https://github.com/PHTMGatt/13-Candidate-Search/actions/workflows/verify.yml) [![Live demo](https://img.shields.io/badge/live%20demo-online-2ea44f)](https://one3-candidate-search-u82d.onrender.com)
+
+![Candidate Scout search results](docs/screenshot.png)
 
 A clean and responsive GitHub candidate viewer built with **React** and **TypeScript**. This app helps you explore potential developers from GitHub, presenting them in a modern UI with theme toggling, pagination, and plans for filtering and sorting features.
 
 🔗 **Live Demo**: [https://one3-candidate-search-u82d.onrender.com](https://one3-candidate-search-u82d.onrender.com)
-
----
-
-## 📸 Screenshots
-
-Home & Candidate View Interface:
-
-![CandidateSearch Screenshot](https://raw.githubusercontent.com/PHTMGatt/12-React-Portfolio/main/src/assets/photos/Candidate%20Search.png)
-
-> The app features a fixed top Navbar and collapsible SideNav, with centered candidate components and interactive plus/minus controls.
 
 ---
 
