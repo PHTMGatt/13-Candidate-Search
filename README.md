@@ -33,11 +33,45 @@ Home & Candidate View Interface:
 ## 🛠️ Tech Stack
 
 - **Framework**: React + TypeScript
-- **Styling**: CSS Modules (or Tailwind if used)
-- **Icons**: Lucide + React Icons
+- **Build tool**: Vite
+- **Styling**: plain CSS
+- **Icons**: React Icons
+- **Routing**: React Router
 - **API**: GitHub REST API
 - **Deployment**: Render.com
 
 ---
 
-## 📁 Project Structure (Simplified)
+## 🚀 Getting Started
+
+Requires **Node.js 22.13+** (pinned in `.node-version`).
+
+```bash
+npm install
+npm run dev       # dev server at http://localhost:5173
+```
+
+No API key or `.env` is needed: the app calls the public GitHub REST API without a token, so heavy use can hit GitHub's unauthenticated rate limit (the app shows a "rate limit reached" message when that happens).
+
+## 📜 Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Start the Vite dev server |
+| `npm run lint` | ESLint, zero warnings allowed |
+| `npm run build` | Type-check (`tsc`) and build to `dist/` |
+| `npm start` / `npm run preview` | Serve the built `dist/` locally |
+
+There is no test suite; CI (`.github/workflows/verify.yml`) runs `npm ci`, `npm run lint` and `npm run build` on every pull request.
+
+## 📁 Project Structure
+
+```
+src/
+  api/API.tsx          GitHub search + user lookups
+  components/          CandidateCard, Nav, saved-candidate list
+  pages/               CandidateSearch, SavedCandidates, ErrorPage
+  interfaces/          Candidate types
+```
+
+Saved candidates live in the browser's `localStorage`.
