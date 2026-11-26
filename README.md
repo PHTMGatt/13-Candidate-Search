@@ -12,6 +12,10 @@ A clean and responsive GitHub candidate viewer built with **React** and **TypeSc
 
 ---
 
+## Status
+
+Checked 2026-11-26 on Windows with Node 26. `npm ci`, `npm run lint` and `npm run build` pass. The live demo and GitHub API calls were not re-tested. No test suite.
+
 ## ✨ Features
 
 - 🔍 **GitHub API Integration** – View candidate profiles in real-time
